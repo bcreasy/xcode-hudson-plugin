@@ -6,6 +6,12 @@
     See global.jelly for a general discussion about jelly script.
   -->
 
+    <f:entry title="xcodepath" field="target"
+      description="Use a specific XCode binary (i,e. xcode3 vs xcode4)"
+      help="/plugin/xcode/help-xcodepath.html">
+        <f:textbox name="xcode.xcodepath" value="${instance.xcodepath}" />
+    </f:entry>
+
     <f:entry title="Target" field="target"
       description="Leave empty for all targets"
       help="/plugin/xcode/help-target.html">

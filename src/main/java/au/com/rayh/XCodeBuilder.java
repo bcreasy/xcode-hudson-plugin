@@ -30,6 +30,8 @@ public class XCodeBuilder extends Builder {
     private Boolean updateBuildNumber;
     private String configuration;
     private String overrideMarketingNumber;
+    private String xcodepath;
+    private String xcodebin;
     private String target;
     private String sdk;
     private String xcodeProjectPath;
@@ -43,6 +45,7 @@ public class XCodeBuilder extends Builder {
                         Boolean cleanBeforeBuild,
                         Boolean updateBuildNumber,
                         String configuration,
+                        String xcodepath,
                         String target,
                         String sdk,
                         String xcodeProjectPath,
@@ -51,6 +54,7 @@ public class XCodeBuilder extends Builder {
                         String versionNumberPattern,
                         String overrideMarketingNumber) {
         this.buildIpa = buildIpa;
+        this.xcodepath = xcodepath;
         this.sdk = sdk;
         this.target = target;
         this.cleanBeforeBuild = cleanBeforeBuild;
@@ -66,6 +70,11 @@ public class XCodeBuilder extends Builder {
     public String getVersionNumberPattern() {
         return versionNumberPattern;
     }
+
+    public String getXcodepath() {
+        return xcodepath;
+    }
+
     public String getSdk() {
         return sdk;
     }
@@ -111,9 +120,18 @@ public class XCodeBuilder extends Builder {
         EnvVars envs = build.getEnvironment(listener);
         FilePath projectRoot = build.getProject().getWorkspace();
 
+        if(!StringUtils.isEmpty(xcodepath)) {
+          xcodebin = xcodepath + "/usr/bin/xcodebuild";
+          listener.getLogger().println("Job-specific Xcode install: " + xcodebin);
+        }
+        else {
+          xcodebin = getDescriptor().xcodebuildPath();
+        }
+        
+
         // check that the configured tools exist
-        if(!new FilePath(projectRoot.getChannel(), getDescriptor().xcodebuildPath()).exists()) {
-            listener.fatalError("Cannot find xcodebuild with the configured path {0}", getDescriptor().xcodebuildPath());
+        if(!new FilePath(projectRoot.getChannel(), xcodebin).exists()) {
+            listener.fatalError("Cannot find xcodebuild with the configured path {0}", xcodebin);
         }
         if(!new FilePath(projectRoot.getChannel(), getDescriptor().agvtoolPath()).exists()) {
             listener.fatalError("Cannot find agvtool with the configured path {0}", getDescriptor().agvtoolPath());
@@ -127,7 +145,7 @@ public class XCodeBuilder extends Builder {
         FilePath buildDirectory = projectRoot.child("build").child(configuration + "-iphoneos");
 
         // XCode Version
-        int returnCode = launcher.launch().envs(envs).cmds(getDescriptor().xcodebuildPath(), "-version").stdout(listener).pwd(projectRoot).join();
+        int returnCode = launcher.launch().envs(envs).cmds(xcodebin, "-version").stdout(listener).pwd(projectRoot).join();
         if(returnCode>0) return false;
 
         // Unlock keychain
@@ -190,7 +208,7 @@ public class XCodeBuilder extends Builder {
         // Build
         StringBuilder xcodeReport = new StringBuilder("Going to invoke xcodebuild: ");
         XCodeBuildOutputParser reportGenerator = new XCodeBuildOutputParser(projectRoot, listener);
-        List<String> commandLine = Lists.newArrayList(getDescriptor().xcodebuildPath());
+        List<String> commandLine = Lists.newArrayList(xcodebin);
         if(StringUtils.isEmpty(target)) {
             commandLine.add("-alltargets");
             xcodeReport.append("target: ALL");
