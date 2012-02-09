@@ -39,7 +39,17 @@ public class XCodeBuilder extends Builder {
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     @DataBoundConstructor
-    public XCodeBuilder(Boolean buildIpa, Boolean cleanBeforeBuild, Boolean updateBuildNumber, String configuration, String target, String sdk, String xcodeProjectPath, String xcodeProjectFile, String embeddedProfileFile, String versionNumberPattern, String overrideMarketingNumber) {
+    public XCodeBuilder(Boolean buildIpa,
+                        Boolean cleanBeforeBuild,
+                        Boolean updateBuildNumber,
+                        String configuration,
+                        String target,
+                        String sdk,
+                        String xcodeProjectPath,
+                        String xcodeProjectFile,
+                        String embeddedProfileFile,
+                        String versionNumberPattern,
+                        String overrideMarketingNumber) {
         this.buildIpa = buildIpa;
         this.sdk = sdk;
         this.target = target;
