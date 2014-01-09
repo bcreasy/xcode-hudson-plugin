@@ -33,6 +33,28 @@
                     </dependency>
                 </dependencies>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>1.3.1</version>
+                <executions>
+                    <execution>
+                        <id>enforce-versions</id>
+                        <goals>
+                            <goal>display-info</goal>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <rules>
+                        <requireJavaVersion>
+                            <version>[1.6,1.7]</version> <!-- require only jdk 1.6.0_n, exclude 1.7 -->
+                        </requireJavaVersion>
+                    </rules>
+                    <fail>true</fail>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
